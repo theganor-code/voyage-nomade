@@ -591,31 +591,18 @@ function renderHome(){
   if(preview)preview.textContent=steps.length?steps.map(s=>s.place).join(" → "):"Ajoute tes étapes pour construire le parcours";
 }
 async function fileToDataURL(file){
-  // Les photos d'iPhone peuvent être très lourdes. On les réduit avant de les
-  // enregistrer dans le stockage local, sinon l'image peut ne plus s'afficher.
-  return await new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onerror=reject;
-    reader.onload=()=>{
-      const src=reader.result;
-      const img=new Image();
-      img.onload=()=>{
-        const max=1400;
-        const scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
-        const canvas=document.createElement('canvas');
-        canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
-        canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
-        const ctx=canvas.getContext('2d');
-        ctx.drawImage(img,0,0,canvas.width,canvas.height);
-        resolve(canvas.toDataURL('image/jpeg',0.82));
-      };
-      img.onerror=()=>reject(new Error('Cette image ne peut pas être lue par le navigateur. Choisis une photo JPG/PNG.'));
-      img.src=src;
-    };
-    reader.readAsDataURL(file);
-  });
+  const blob=await galleryCompatibleBlob(file);
+  const bitmap=await createImageBitmap(blob,{imageOrientation:"from-image"});
+  const max=1400;
+  const scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+  canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  bitmap.close?.();
+  return canvas.toDataURL("image/jpeg",0.82);
 }
-
 
 const editTripModal=document.getElementById("editTripModal");
 const removeTripCoverButton=document.getElementById("removeTripCover");
