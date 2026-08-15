@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f8f6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Voyage Nomade — Carnets de voyage</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -271,4 +273,5 @@ textarea#tripTitle{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/iife/heic-to.js"></script>
 <script src="app.js"></script>
+<script>if("serviceWorker" in navigator && location.protocol !== "file:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
 </body></html>

@@ -583,7 +583,37 @@ function renderHome(){
   if(preview)preview.textContent=steps.length?steps.map(s=>s.place).join(" → "):"Ajoute tes étapes pour construire le parcours";
 }
 async function fileToDataURL(file){
-  return galleryPhotoDataUrl(file);
+  const isHeic = /heic|heif/i.test(file.type || "") || /\.(heic|heif)$/i.test(file.name || "");
+
+  if (isHeic) {
+    if (typeof HeicTo !== "function") {
+      throw new Error("Le convertisseur HEIC n'est pas chargé.");
+    }
+
+    const converted = await HeicTo({
+      blob: file,
+      type: "image/jpeg",
+      quality: 0.92
+    });
+
+    const blob = converted instanceof Blob
+      ? converted
+      : new Blob([converted], {type:"image/jpeg"});
+
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Impossible de lire la photo convertie."));
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Impossible de lire cette photo."));
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
 }
 
 const editTripModal=document.getElementById("editTripModal");
