@@ -913,18 +913,11 @@ async function bootstrapSharedTrips(){
   if(!chosen || !knownIds.includes(chosen)) chosen=knownIds[0]||"";
 
   if(!chosen){
-    const created=await createBlankSharedTrip();
-    stored=[created];
-    chosen=created.id;
-    knownIds=[chosen];
   }
 
   trips=localTrips();
   currentTripId=chosen;
   if(!trips.some(t=>t.id===currentTripId)){
-    const created=await createBlankSharedTrip();
-    trips=localTrips();
-    currentTripId=created.id;
   }
   selectCurrentTripId(currentTripId);
   renderSharedTrip();
